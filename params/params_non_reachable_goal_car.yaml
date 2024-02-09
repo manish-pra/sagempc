@@ -1,0 +1,74 @@
+env:                                                # Env parameters mainly used for env generation
+  start: -1.00                                      # origin of domain
+  shape:
+    x :  120                                        # Number of grid points
+    y :  120
+  start_loc: [0.72, 0.72]                           # Agent start location, overwritten by params_env.yaml
+  goal_loc: [0.6, -0.5]                             # Agent goal location, overwritten by params_env.yaml
+  n_players : 1         
+  Cx_lengthscale : 0.5                              # Lenghtscale to generate the constraint for the environment 
+  Cx_noise : 0.0001                                 # Noise std use to generate environment samples
+  Fx_lengthscale : 1                                # Same as Cx_lengthscale, if objective is also from a GP sample 
+  Fx_noise : 0.0001
+  Cx_beta : 1.5                                     # Scaling of beta. Defualt in gpytorch is 2. 1.5 represents 2x1.5 = 3
+  Fx_beta : 1.5
+  generate: False                                   # Set True, False, walls, None: use some fixed save path
+  env_file_name: 'env_data.pkl'                     # Name of the env file to load if generate= false and save if generate = true
+  cov_module: 'Matern'                              # Kernel used in generation options: 'Matern', Sq_exp, 'Poly'
+  compute_true_Lipschitz: False                     # Set true to compute true L_q
+
+visu: 
+  show: False                                       # Turn on the visualization
+  show_current_loc: False                           # Show current location of the agent
+  step_size: 0.015                                  # Step size for the visualization                          
+  opti_path: False                                  # Show the optimistic path generate by Problem 18/ discrete path in optimistic set
+  show_path: True                                   # Show the path travelled by the agent              
+  show_opti_set: False                              # Show the optimistic set
+
+agent:
+  dynamics: 'bicycle'                               # Robot dynamics, possible options: "unicycle", "bicycle", "NH_intergrator" , "int"
+  Cx_lengthscale : 0.5                              # Lenghtscale used by the agent for belief of the environment        
+  Cx_noise : 0.00001                                # Noise std used by the agent for belief of the environment       
+  Fx_lengthscale : 0.5                              # Same as Cx_lengthscale, if objective is also from a GP sample 
+  Fx_noise : 0.001
+  Cx_beta : 1.5 # 1.5                               # Scaling of beta used by agent. Defualt in gpytorch is 2. 1.5 represents 2x1.5 = 3
+  Fx_beta : 2.0 #1.5
+  mean_shift_val : 2                                # shift the mean of GP
+  cov_module: 'Matern'                              # kernel used by the agent : 'Matern', Sq_exp
+
+
+optimizer:
+  H : 25                                            # Horizon
+  Hm : 13                                           # Sampling horizon, somewhere in the middle of the horizon
+  u_min : [-60, -1]                                 # Constraints on action space, Minimum control input
+  u_max : [60, 1]                                   # Constraints on action space, Maximum control input         x,y,v,theta,theta_dot     
+  x_min : [-1, -1, -10,-50]                         # Constraints on state space, Minimum state value
+  x_max : [0.8, 0.8, 10, 50]                        # Constraints on state space, Maximum state value 
+  linear_solver : 'ma57'                            # linear solver used by the optimizer, see https://coin-or.github.io/Ipopt/OPTIONS.html#OPT_linear_solver
+  oracle:                                           # Oracle computes the optimistic goal $x^{g,o}$ 
+    max_sqp_iter: 10
+    tol_nlp: 1.0e-6
+  SEMPC:                                            # Parameters for the SageMPC                 
+    max_sqp_iter: 20                                # Maximum number of SQP iterations
+    tol_nlp: 1.0e-4                                 # Tolerance for the NLP solver
+  Tf: 1                                             # sampling time = Tf/H
+  order: 2
+  x_dim: 2
+  dt: 0.035 # 0.010                                 # Lower bound on the discret time step for the dynamics                      
+  w: 5000                                           # Cost function weight for the x(H')
+
+common:                                             
+  dim : 2
+  constraint : 0.0                                  # Constraint threshold for safety function                      
+  epsilon : 0.2                                     # user defined accuracy
+  Lc : 11.159                                       # Lipschitz constant of the constraint function                  
+
+algo:
+  objective: "GO"                                  # Objective of the algorithm, options: "GO", "SE" (goal-oriented, maximum domain safe exploration)
+  type: "MPC_V0"                                   # Variant of the SageOC, "ret", "ret_expander", "MPC_expander", "MPC", "MPC_Xn", "MPC_V0"
+  init: "past_iterate"                             # Warmstart based on past iterate discrete path
+
+experiment:
+  name: "goMPC"                                    # Random name of the experiment
+  generate_regret_plot : True                      # Set True to generate the regret plot
+  folder: "non_reachable_goal_envs"                         # Folder to pick up the environment type and save the results             

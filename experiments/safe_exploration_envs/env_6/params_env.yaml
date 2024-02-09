@@ -1,0 +1,22 @@
+Cx_beta: 1.5
+Cx_lengthscale: 0.5
+Cx_noise: 0.0001
+Fx_beta: 1.5
+Fx_lengthscale: 1
+Fx_noise: 0.0001
+cov_module: Matern
+env_file_name: env_data.pkl
+generate: true
+goal_loc:
+- -1.3600001335144043
+- -1.3200000524520874
+n_players: 1
+shape:
+  lx: 3
+  ly: 0
+  x: 30
+  y: 30
+start: -2.2
+start_loc:
+- -1.880000114440918
+- -1.6800000667572021
